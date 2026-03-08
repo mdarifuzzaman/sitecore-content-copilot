@@ -37,6 +37,26 @@
         "type": "string",
         "default": "en",
         "description": "Sitecore language"
+      },
+      "sitecoreCopilot.aiEnabled": {
+        "type": "boolean",
+        "default": false,
+        "description": "Enable AI features in Sitecore Content Copilot"
+      },
+      "sitecoreCopilot.aiEndpoint": {
+        "type": "string",
+        "default": "",
+        "description": "AI endpoint URL"
+      },
+      "sitecoreCopilot.aiApiKey": {
+        "type": "string",
+        "default": "",
+        "description": "API key for AI endpoint"
+      },
+      "sitecoreCopilot.aiModel": {
+        "type": "string",
+        "default": "",
+        "description": "Model name for AI requests"
       }
     },
     "commands": [
@@ -79,6 +99,10 @@
     {
       "command": "sitecore.openItemInGraphqlExplorer",
       "title": "Sitecore: Open Item in GraphQL Explorer"
+    },
+    {
+      "command": "sitecore.explainItem",
+      "title": "Sitecore: Explain Item"
     }
   ],
     "viewsContainers": {
@@ -136,6 +160,11 @@
           "command": "sitecore.openItemInGraphqlExplorer",
           "when": "view == sitecoreExplorer && viewItem == item",
           "group": "navigation@5"
+        },
+        {
+          "command": "sitecore.explainItem",
+          "when": "view == sitecoreExplorer && viewItem == item",
+          "group": "navigation@6"
         }
       ]
     }

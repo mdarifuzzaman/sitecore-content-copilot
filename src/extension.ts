@@ -10,6 +10,7 @@ import { SitecoreTreeProvider } from './providers/sitecoreTreeProvider';
 import { GraphqlExplorerPanel } from './panels/graphqlExplorerPanel';
 import { openItemInGraphqlExplorer } from './commands/openItemInGraphqlExplorer';
 import { runSetupWizard } from './setup/setupWizard';
+import { explainItem } from './commands/explainItem';
 
 export async function activate(context: vscode.ExtensionContext) {
   await runSetupWizard(context);
@@ -87,6 +88,13 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const explainItemCommand = vscode.commands.registerCommand(
+    'sitecore.explainItem',
+    async (input: unknown) => {
+      await explainItem(input);
+    }
+  );
+
   const config = vscode.workspace.getConfiguration('sitecoreCopilot');
   const endpoint = config.get<string>('endpoint');
   treeProvider.setConnected(!!endpoint);
@@ -101,7 +109,8 @@ export async function activate(context: vscode.ExtensionContext) {
     generateComponentCommand,
     openGraphqlExplorerCommand,
     refreshExplorerCommand,
-    openItemInGraphqlExplorerCommand
+    openItemInGraphqlExplorerCommand,
+    explainItemCommand
   );
 }
 
