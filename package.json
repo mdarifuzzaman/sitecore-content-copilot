@@ -35,36 +35,39 @@
   "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
-      "sitecoreCopilot.endpoint": {
-        "type": "string",
-        "default": "",
-        "description": "Sitecore GraphQL endpoint"
-      },
-      "sitecoreCopilot.apiKey": {
-        "type": "string",
-        "default": "",
-        "description": "Sitecore API key"
-      },
-      "sitecoreCopilot.language": {
-        "type": "string",
-        "default": "en",
-        "description": "Sitecore language"
-      },
-      "sitecoreCopilot.aiEnabled": {
-        "type": "boolean",
-        "default": false,
-        "description": "Enable AI features in Sitecore Content Copilot"
-      },
-      "sitecoreCopilot.aiApiKey": {
-        "type": "string",
-        "default": "",
-        "description": "API key for AI endpoint"
-      },
-      "sitecoreCopilot.aiModel": {
-        "type": "string",
-        "default": "",
-        "description": "Model name for AI requests"
-      }
+      "title": "Sitecore Content Copilot",
+      "properties": {
+        "sitecoreCopilot.endpoint": {
+          "type": "string",
+          "default": "",
+          "description": "Sitecore GraphQL endpoint"
+        },
+        "sitecoreCopilot.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Sitecore API key"
+        },
+        "sitecoreCopilot.language": {
+          "type": "string",
+          "default": "en",
+          "description": "Sitecore language"
+        },
+        "sitecoreCopilot.aiEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable AI features in Sitecore Content Copilot"
+        },
+        "sitecoreCopilot.aiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for AI endpoint"
+        },
+        "sitecoreCopilot.aiModel": {
+          "type": "string",
+          "default": "",
+          "description": "Model name for AI requests"
+        }
+      }      
     },
     "commands": [
       {
