@@ -3,6 +3,8 @@ import { connectSitecore } from './commands/connect';
 import { searchItem } from './commands/searchItem';
 import { openItemFromExplorer } from './commands/openItemFromExplorer';
 import { generateTypes } from './commands/generateTypes';
+import { generateJssModel } from './commands/generateJssModel';
+import { copyGraphqlQuery } from './commands/copyGraphqlQuery';
 import { SitecoreTreeProvider } from './providers/sitecoreTreeProvider';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -43,6 +45,20 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const generateJssModelCommand = vscode.commands.registerCommand(
+    'sitecore.generateJssModel',
+    async (input: unknown) => {
+      await generateJssModel(input);
+    }
+  );
+
+  const copyGraphqlQueryCommand = vscode.commands.registerCommand(
+    'sitecore.copyGraphqlQuery',
+    async (input: unknown) => {
+      await copyGraphqlQuery(input);
+    }
+  );
+
   const refreshExplorerCommand = vscode.commands.registerCommand(
     'sitecore.refreshExplorer',
     async () => {
@@ -63,6 +79,8 @@ export function activate(context: vscode.ExtensionContext) {
     searchItemCommand,
     openItemFromExplorerCommand,
     generateTypesCommand,
+    generateJssModelCommand,
+    copyGraphqlQueryCommand,
     refreshExplorerCommand
   );
 }
