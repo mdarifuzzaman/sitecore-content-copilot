@@ -2,7 +2,7 @@
   "name": "sitecore-content-copilot",
   "displayName": "Sitecore Content Copilot",
   "description": "Developer toolkit for Sitecore XM Cloud and Headless development.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "arif-cmslightaustraliaptyltd",
   "license": "MIT",
   "keywords": [
@@ -54,7 +54,7 @@
         "type": "boolean",
         "default": false,
         "description": "Enable AI features in Sitecore Content Copilot"
-      },      
+      },
       "sitecoreCopilot.aiApiKey": {
         "type": "string",
         "default": "",
@@ -67,51 +67,51 @@
       }
     },
     "commands": [
-    {
-      "command": "sitecore.connect",
-      "title": "Sitecore: Connect"
-    },
-    {
-      "command": "sitecore.searchItem",
-      "title": "Sitecore: Search Item"
-    },
-    {
-      "command": "sitecore.refreshExplorer",
-      "title": "Sitecore: Refresh Explorer"
-    },
-    {
-    "command": "sitecore.openItemFromExplorer",
-    "title": "Sitecore: Open Item From Explorer"
-    },
-    {
-      "command": "sitecore.generateTypes",
-      "title": "Sitecore: Generate TypeScript Model"
-    },
-    {
-      "command": "sitecore.generateJssModel",
-      "title": "Sitecore: Generate JSS Field Model"
-    },
-    {
-      "command": "sitecore.copyGraphqlQuery",
-      "title": "Sitecore: Copy GraphQL Query"
-    },
-    {
-      "command": "sitecore.openGraphqlExplorer",
-      "title": "Sitecore: Open GraphQL Explorer"
-    },
-    {
-      "command": "sitecore.generateComponent",
-      "title": "Sitecore: Generate JSS Component"
-    },
-    {
-      "command": "sitecore.openItemInGraphqlExplorer",
-      "title": "Sitecore: Open Item in GraphQL Explorer"
-    },
-    {
-      "command": "sitecore.explainItem",
-      "title": "Sitecore: Explain Item"
-    }
-  ],
+      {
+        "command": "sitecore.connect",
+        "title": "Sitecore: Connect"
+      },
+      {
+        "command": "sitecore.searchItem",
+        "title": "Sitecore: Search Item"
+      },
+      {
+        "command": "sitecore.refreshExplorer",
+        "title": "Sitecore: Refresh Explorer"
+      },
+      {
+        "command": "sitecore.openItemFromExplorer",
+        "title": "Sitecore: Open Item From Explorer"
+      },
+      {
+        "command": "sitecore.generateTypes",
+        "title": "Sitecore: Generate TypeScript Model"
+      },
+      {
+        "command": "sitecore.generateJssModel",
+        "title": "Sitecore: Generate JSS Field Model"
+      },
+      {
+        "command": "sitecore.copyGraphqlQuery",
+        "title": "Sitecore: Copy GraphQL Query"
+      },
+      {
+        "command": "sitecore.openGraphqlExplorer",
+        "title": "Sitecore: Open GraphQL Explorer"
+      },
+      {
+        "command": "sitecore.generateComponent",
+        "title": "Sitecore: Generate JSS Component"
+      },
+      {
+        "command": "sitecore.openItemInGraphqlExplorer",
+        "title": "Sitecore: Open Item in GraphQL Explorer"
+      },
+      {
+        "command": "sitecore.explainItem",
+        "title": "Sitecore: Explain Item"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
