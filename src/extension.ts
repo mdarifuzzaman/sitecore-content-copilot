@@ -6,30 +6,23 @@ import { generateTypes } from './commands/generateTypes';
 import { generateJssModel } from './commands/generateJssModel';
 import { copyGraphqlQuery } from './commands/copyGraphqlQuery';
 import { SitecoreTreeProvider } from './providers/sitecoreTreeProvider';
+import { GraphqlExplorerPanel } from './panels/graphqlExplorerPanel';
 
 export function activate(context: vscode.ExtensionContext) {
   const treeProvider = new SitecoreTreeProvider();
 
   vscode.window.registerTreeDataProvider('sitecoreExplorer', treeProvider);
 
-  const connectCommand = vscode.commands.registerCommand(
-    'sitecore.connect',
-    async () => {
-      await connectSitecore();
+  const connectCommand = vscode.commands.registerCommand('sitecore.connect', async () => {
+    await connectSitecore();
+    const config = vscode.workspace.getConfiguration('sitecoreCopilot');
+    const endpoint = config.get<string>('endpoint');
+    treeProvider.setConnected(!!endpoint);
+  });
 
-      const config = vscode.workspace.getConfiguration('sitecoreCopilot');
-      const endpoint = config.get<string>('endpoint');
-
-      treeProvider.setConnected(!!endpoint);
-    }
-  );
-
-  const searchItemCommand = vscode.commands.registerCommand(
-    'sitecore.searchItem',
-    async () => {
-      await searchItem();
-    }
-  );
+  const searchItemCommand = vscode.commands.registerCommand('sitecore.searchItem', async () => {
+    await searchItem();
+  });
 
   const openItemFromExplorerCommand = vscode.commands.registerCommand(
     'sitecore.openItemFromExplorer',
@@ -59,12 +52,18 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const openGraphqlExplorerCommand = vscode.commands.registerCommand(
+    'sitecore.openGraphqlExplorer',
+    async () => {
+      GraphqlExplorerPanel.createOrShow(context.extensionUri);
+    }
+  );
+
   const refreshExplorerCommand = vscode.commands.registerCommand(
     'sitecore.refreshExplorer',
     async () => {
       const config = vscode.workspace.getConfiguration('sitecoreCopilot');
       const endpoint = config.get<string>('endpoint');
-
       treeProvider.setConnected(!!endpoint);
       treeProvider.refresh();
     }
@@ -81,6 +80,7 @@ export function activate(context: vscode.ExtensionContext) {
     generateTypesCommand,
     generateJssModelCommand,
     copyGraphqlQueryCommand,
+    openGraphqlExplorerCommand,
     refreshExplorerCommand
   );
 }

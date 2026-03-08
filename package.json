@@ -63,6 +63,10 @@
     {
       "command": "sitecore.copyGraphqlQuery",
       "title": "Sitecore: Copy GraphQL Query"
+    },
+    {
+      "command": "sitecore.openGraphqlExplorer",
+      "title": "Sitecore: Open GraphQL Explorer"
     }
   ],
     "viewsContainers": {
