@@ -71,6 +71,10 @@
     {
       "command": "sitecore.generateComponent",
       "title": "Sitecore: Generate JSS Component"
+    },
+    {
+      "command": "sitecore.openItemInGraphqlExplorer",
+      "title": "Sitecore: Open Item in GraphQL Explorer"
     }
   ],
     "viewsContainers": {
@@ -123,6 +127,11 @@
           "command": "sitecore.generateComponent",
           "when": "view == sitecoreExplorer && viewItem == item",
           "group": "navigation@4"
+        },
+        {
+          "command": "sitecore.openItemInGraphqlExplorer",
+          "when": "view == sitecoreExplorer && viewItem == item",
+          "group": "navigation@5"
         }
       ]
     }

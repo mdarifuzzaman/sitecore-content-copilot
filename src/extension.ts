@@ -8,6 +8,7 @@ import { copyGraphqlQuery } from './commands/copyGraphqlQuery';
 import { generateComponent } from './commands/generateComponent';
 import { SitecoreTreeProvider } from './providers/sitecoreTreeProvider';
 import { GraphqlExplorerPanel } from './panels/graphqlExplorerPanel';
+import { openItemInGraphqlExplorer } from './commands/openItemInGraphqlExplorer';
 
 export function activate(context: vscode.ExtensionContext) {
   const treeProvider = new SitecoreTreeProvider();
@@ -77,6 +78,13 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const openItemInGraphqlExplorerCommand = vscode.commands.registerCommand(
+    'sitecore.openItemInGraphqlExplorer',
+    async (input: unknown) => {
+      await openItemInGraphqlExplorer(input, context);
+    }
+  );
+
   const config = vscode.workspace.getConfiguration('sitecoreCopilot');
   const endpoint = config.get<string>('endpoint');
   treeProvider.setConnected(!!endpoint);
@@ -90,7 +98,8 @@ export function activate(context: vscode.ExtensionContext) {
     copyGraphqlQueryCommand,
     generateComponentCommand,
     openGraphqlExplorerCommand,
-    refreshExplorerCommand
+    refreshExplorerCommand,
+    openItemInGraphqlExplorerCommand
   );
 }
 

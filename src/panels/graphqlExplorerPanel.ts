@@ -36,12 +36,25 @@ export class GraphqlExplorerPanel {
   private readonly panel: vscode.WebviewPanel;
   private readonly context: vscode.ExtensionContext;
   private readonly disposables: vscode.Disposable[] = [];
+  private pendingInitialQuery?: string;
+  private pendingInitialVariablesText?: string;
 
-  public static createOrShow(context: vscode.ExtensionContext) {
+  public static createOrShow(
+    context: vscode.ExtensionContext,
+    initialState?: {
+      query?: string;
+      variablesText?: string;
+    }
+  ) {
     const column = vscode.window.activeTextEditor?.viewColumn;
 
     if (GraphqlExplorerPanel.currentPanel) {
       GraphqlExplorerPanel.currentPanel.panel.reveal(column);
+
+      if (initialState) {
+        GraphqlExplorerPanel.currentPanel.setInitialState(initialState);
+      }
+
       return;
     }
 
@@ -55,15 +68,25 @@ export class GraphqlExplorerPanel {
       }
     );
 
-    GraphqlExplorerPanel.currentPanel = new GraphqlExplorerPanel(panel, context);
+    GraphqlExplorerPanel.currentPanel = new GraphqlExplorerPanel(
+      panel,
+      context,
+      initialState
+    );
   }
 
   private constructor(
     panel: vscode.WebviewPanel,
-    context: vscode.ExtensionContext
+    context: vscode.ExtensionContext,
+    initialState?: {
+      query?: string;
+      variablesText?: string;
+    }
   ) {
     this.panel = panel;
     this.context = context;
+    this.pendingInitialQuery = initialState?.query;
+    this.pendingInitialVariablesText = initialState?.variablesText;
 
     this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 
@@ -89,6 +112,20 @@ export class GraphqlExplorerPanel {
       null,
       this.disposables
     );
+  }
+
+  public async setInitialState(initialState: {
+    query?: string;
+    variablesText?: string;
+  }) {
+    this.pendingInitialQuery = initialState.query;
+    this.pendingInitialVariablesText = initialState.variablesText;
+
+    await this.panel.webview.postMessage({
+      type: 'prefillEditor',
+      query: this.pendingInitialQuery ?? '',
+      variablesText: this.pendingInitialVariablesText ?? '',
+    });
   }
 
   public dispose() {
@@ -205,6 +242,8 @@ export class GraphqlExplorerPanel {
       type: 'initialState',
       endpoint,
       history,
+      query: this.pendingInitialQuery ?? '',
+      variablesText: this.pendingInitialVariablesText ?? '',
     });
   }
 
@@ -508,6 +547,26 @@ export class GraphqlExplorerPanel {
       if (message.type === 'initialState') {
         endpointInfo.textContent = 'Endpoint: ' + message.endpoint;
         populateHistory(message.history || []);
+
+        if (message.query) {
+          queryEditor.value = message.query;
+        }
+
+        if (message.variablesText) {
+          variablesEditor.value = message.variablesText;
+        }
+      }
+      
+      if (message.type === 'prefillEditor') {
+        if (message.query) {
+          queryEditor.value = message.query;
+        }
+
+        if (message.variablesText) {
+          variablesEditor.value = message.variablesText;
+        }
+
+        setStatus('Editor prefilled');
       }
 
       if (message.type === 'historyUpdated') {
