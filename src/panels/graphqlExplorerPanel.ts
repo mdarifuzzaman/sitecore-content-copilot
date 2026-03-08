@@ -1,19 +1,43 @@
 import * as vscode from 'vscode';
 import { sitecoreRequest } from '../sitecore/client';
 
-type ExplorerRequestMessage = {
-  type: 'runQuery';
+type ExplorerRequestMessage =
+  | {
+      type: 'runQuery';
+      query: string;
+      variablesText: string;
+    }
+  | {
+      type: 'saveHistory';
+      query: string;
+      variablesText: string;
+    }
+  | {
+      type: 'loadHistory';
+      index: number;
+    }
+  | {
+      type: 'getInitialState';
+    };
+
+type QueryHistoryItem = {
   query: string;
   variablesText: string;
+  savedAt: string;
+  label: string;
 };
+
+const HISTORY_KEY = 'sitecore.graphqlExplorer.history';
+const MAX_HISTORY_ITEMS = 15;
 
 export class GraphqlExplorerPanel {
   public static currentPanel: GraphqlExplorerPanel | undefined;
+
   private readonly panel: vscode.WebviewPanel;
-  private readonly extensionUri: vscode.Uri;
+  private readonly context: vscode.ExtensionContext;
   private readonly disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(extensionUri: vscode.Uri) {
+  public static createOrShow(context: vscode.ExtensionContext) {
     const column = vscode.window.activeTextEditor?.viewColumn;
 
     if (GraphqlExplorerPanel.currentPanel) {
@@ -31,12 +55,15 @@ export class GraphqlExplorerPanel {
       }
     );
 
-    GraphqlExplorerPanel.currentPanel = new GraphqlExplorerPanel(panel, extensionUri);
+    GraphqlExplorerPanel.currentPanel = new GraphqlExplorerPanel(panel, context);
   }
 
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+  private constructor(
+    panel: vscode.WebviewPanel,
+    context: vscode.ExtensionContext
+  ) {
     this.panel = panel;
-    this.extensionUri = extensionUri;
+    this.context = context;
 
     this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 
@@ -44,8 +71,19 @@ export class GraphqlExplorerPanel {
 
     this.panel.webview.onDidReceiveMessage(
       async (message: ExplorerRequestMessage) => {
-        if (message.type === 'runQuery') {
-          await this.handleRunQuery(message);
+        switch (message.type) {
+          case 'runQuery':
+            await this.handleRunQuery(message.query, message.variablesText);
+            break;
+          case 'saveHistory':
+            await this.handleSaveHistory(message.query, message.variablesText);
+            break;
+          case 'loadHistory':
+            await this.handleLoadHistory(message.index);
+            break;
+          case 'getInitialState':
+            await this.postInitialState();
+            break;
         }
       },
       null,
@@ -55,7 +93,6 @@ export class GraphqlExplorerPanel {
 
   public dispose() {
     GraphqlExplorerPanel.currentPanel = undefined;
-
     this.panel.dispose();
 
     while (this.disposables.length) {
@@ -66,14 +103,14 @@ export class GraphqlExplorerPanel {
     }
   }
 
-  private async handleRunQuery(message: ExplorerRequestMessage) {
+  private async handleRunQuery(query: string, variablesText: string) {
     try {
       const config = vscode.workspace.getConfiguration('sitecoreCopilot');
       const endpoint = config.get<string>('endpoint');
       const apiKey = config.get<string>('apiKey');
 
       if (!endpoint) {
-        this.panel.webview.postMessage({
+        await this.panel.webview.postMessage({
           type: 'queryResult',
           ok: false,
           error: 'No endpoint configured. Run "Sitecore: Connect" first.',
@@ -81,33 +118,100 @@ export class GraphqlExplorerPanel {
         return;
       }
 
-      let variables: Record<string, unknown> | undefined = undefined;
+      let variables: Record<string, unknown> | undefined;
 
-      if (message.variablesText.trim()) {
-        variables = JSON.parse(message.variablesText);
+      if (variablesText.trim()) {
+        variables = JSON.parse(variablesText);
       }
 
       const result = await sitecoreRequest<unknown>(
         endpoint,
-        message.query,
+        query,
         variables,
         apiKey
       );
 
-      this.panel.webview.postMessage({
+      await this.panel.webview.postMessage({
         type: 'queryResult',
         ok: true,
         data: result,
       });
     } catch (error) {
-      const messageText = error instanceof Error ? error.message : String(error);
+      const message = error instanceof Error ? error.message : String(error);
 
-      this.panel.webview.postMessage({
+      await this.panel.webview.postMessage({
         type: 'queryResult',
         ok: false,
-        error: messageText,
+        error: message,
       });
     }
+  }
+
+  private async handleSaveHistory(query: string, variablesText: string) {
+    const history = this.getHistory();
+
+    const operationMatch = query.match(/\b(query|mutation)\s+([A-Za-z0-9_]+)/);
+    const label =
+      operationMatch?.[2] ??
+      query.split('\n').find((line) => line.trim())?.trim() ??
+      'Untitled Query';
+
+    const newItem: QueryHistoryItem = {
+      query,
+      variablesText,
+      savedAt: new Date().toISOString(),
+      label,
+    };
+
+    const deduped = history.filter(
+      (item) =>
+        !(
+          item.query.trim() === query.trim() &&
+          item.variablesText.trim() === variablesText.trim()
+        )
+    );
+
+    const nextHistory = [newItem, ...deduped].slice(0, MAX_HISTORY_ITEMS);
+
+    await this.context.globalState.update(HISTORY_KEY, nextHistory);
+
+    await this.panel.webview.postMessage({
+      type: 'historyUpdated',
+      history: nextHistory,
+    });
+  }
+
+  private async handleLoadHistory(index: number) {
+    const history = this.getHistory();
+    const item = history[index];
+
+    if (!item) {
+      return;
+    }
+
+    await this.panel.webview.postMessage({
+      type: 'historyLoaded',
+      query: item.query,
+      variablesText: item.variablesText,
+    });
+  }
+
+  private async postInitialState() {
+    const config = vscode.workspace.getConfiguration('sitecoreCopilot');
+    const endpoint = config.get<string>('endpoint') || 'Not configured';
+    const history = this.getHistory();
+
+    await this.panel.webview.postMessage({
+      type: 'initialState',
+      endpoint,
+      history,
+    });
+  }
+
+  private getHistory(): QueryHistoryItem[] {
+    return (
+      this.context.globalState.get<QueryHistoryItem[]>(HISTORY_KEY) ?? []
+    );
   }
 
   private getHtml(webview: vscode.Webview): string {
@@ -132,11 +236,33 @@ export class GraphqlExplorerPanel {
       padding: 16px;
     }
 
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .endpoint {
+      font-size: 12px;
+      opacity: 0.8;
+      word-break: break-all;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
     .layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
-      height: calc(100vh - 32px);
+      height: calc(100vh - 120px);
     }
 
     .panel {
@@ -151,9 +277,8 @@ export class GraphqlExplorerPanel {
       opacity: 0.8;
     }
 
-    textarea, pre {
+    textarea, pre, select {
       width: 100%;
-      flex: 1;
       box-sizing: border-box;
       border: 1px solid var(--vscode-input-border, #555);
       background: var(--vscode-input-background);
@@ -162,6 +287,10 @@ export class GraphqlExplorerPanel {
       border-radius: 6px;
       font-family: var(--vscode-editor-font-family, monospace);
       font-size: 13px;
+    }
+
+    textarea, pre {
+      flex: 1;
       resize: none;
       min-height: 0;
       overflow: auto;
@@ -172,12 +301,6 @@ export class GraphqlExplorerPanel {
       height: 140px;
       flex: unset;
       margin-top: 12px;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      margin: 0 0 12px 0;
     }
 
     button {
@@ -197,15 +320,42 @@ export class GraphqlExplorerPanel {
     .status {
       margin-bottom: 8px;
       font-size: 12px;
-      opacity: 0.8;
+      opacity: 0.85;
+    }
+
+    .history-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .history-wrap select {
+      flex: 1;
+      padding: 8px;
     }
   </style>
 </head>
 <body>
+  <div class="topbar">
+    <div class="endpoint" id="endpointInfo">Endpoint: loading...</div>
+    <div class="status" id="status">Ready</div>
+  </div>
+
+  <div class="history-wrap">
+    <select id="historySelect">
+      <option value="">History</option>
+    </select>
+    <button id="loadHistoryBtn" class="secondary">Load</button>
+    <button id="saveHistoryBtn" class="secondary">Save</button>
+  </div>
+
   <div class="toolbar">
     <button id="runBtn">Run</button>
-    <button id="copyBtn" class="secondary">Copy Query</button>
+    <button id="copyQueryBtn" class="secondary">Copy Query</button>
+    <button id="copyResultBtn" class="secondary">Copy Result</button>
     <button id="formatVarsBtn" class="secondary">Format Variables</button>
+    <button id="clearResultBtn" class="secondary">Clear Result</button>
   </div>
 
   <div class="layout">
@@ -227,7 +377,6 @@ export class GraphqlExplorerPanel {
     </div>
 
     <div class="panel">
-      <div class="status" id="status">Ready</div>
       <div class="label">Result</div>
       <pre id="resultViewer">{}</pre>
     </div>
@@ -236,16 +385,46 @@ export class GraphqlExplorerPanel {
   <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
 
+    const endpointInfo = document.getElementById('endpointInfo');
     const queryEditor = document.getElementById('queryEditor');
     const variablesEditor = document.getElementById('variablesEditor');
     const resultViewer = document.getElementById('resultViewer');
     const status = document.getElementById('status');
+    const historySelect = document.getElementById('historySelect');
+
     const runBtn = document.getElementById('runBtn');
-    const copyBtn = document.getElementById('copyBtn');
+    const copyQueryBtn = document.getElementById('copyQueryBtn');
+    const copyResultBtn = document.getElementById('copyResultBtn');
     const formatVarsBtn = document.getElementById('formatVarsBtn');
+    const clearResultBtn = document.getElementById('clearResultBtn');
+    const saveHistoryBtn = document.getElementById('saveHistoryBtn');
+    const loadHistoryBtn = document.getElementById('loadHistoryBtn');
+
+    let lastResult = '{}';
+
+    function populateHistory(history) {
+      historySelect.innerHTML = '<option value="">History</option>';
+
+      history.forEach((item, index) => {
+        const option = document.createElement('option');
+        const date = new Date(item.savedAt).toLocaleString();
+        option.value = String(index);
+        option.textContent = item.label + ' — ' + date;
+        historySelect.appendChild(option);
+      });
+    }
+
+    function setStatus(text) {
+      status.textContent = text;
+    }
+
+    function formatJsonText(text) {
+      const parsed = JSON.parse(text || '{}');
+      return JSON.stringify(parsed, null, 2);
+    }
 
     runBtn.addEventListener('click', () => {
-      status.textContent = 'Running query...';
+      setStatus('Running query...');
       resultViewer.textContent = '';
 
       vscode.postMessage({
@@ -255,18 +434,59 @@ export class GraphqlExplorerPanel {
       });
     });
 
-    copyBtn.addEventListener('click', async () => {
+    saveHistoryBtn.addEventListener('click', () => {
+      vscode.postMessage({
+        type: 'saveHistory',
+        query: queryEditor.value,
+        variablesText: variablesEditor.value
+      });
+      setStatus('Saved to history');
+    });
+
+    loadHistoryBtn.addEventListener('click', () => {
+      if (!historySelect.value) {
+        setStatus('Choose a history item first');
+        return;
+      }
+
+      vscode.postMessage({
+        type: 'loadHistory',
+        index: Number(historySelect.value)
+      });
+    });
+
+    copyQueryBtn.addEventListener('click', async () => {
       await navigator.clipboard.writeText(queryEditor.value);
-      status.textContent = 'Query copied';
+      setStatus('Query copied');
+    });
+
+    copyResultBtn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(lastResult);
+      setStatus('Result copied');
     });
 
     formatVarsBtn.addEventListener('click', () => {
       try {
-        const parsed = JSON.parse(variablesEditor.value || '{}');
-        variablesEditor.value = JSON.stringify(parsed, null, 2);
-        status.textContent = 'Variables formatted';
-      } catch (error) {
-        status.textContent = 'Variables JSON is invalid';
+        variablesEditor.value = formatJsonText(variablesEditor.value);
+        setStatus('Variables formatted');
+      } catch {
+        setStatus('Variables JSON is invalid');
+      }
+    });
+
+    clearResultBtn.addEventListener('click', () => {
+      resultViewer.textContent = '{}';
+      lastResult = '{}';
+      setStatus('Result cleared');
+    });
+
+    window.addEventListener('keydown', (event) => {
+      const isMac = navigator.platform.toUpperCase().includes('MAC');
+      const runShortcut = isMac ? event.metaKey : event.ctrlKey;
+
+      if (runShortcut && event.key === 'Enter') {
+        event.preventDefault();
+        runBtn.click();
       }
     });
 
@@ -275,14 +495,33 @@ export class GraphqlExplorerPanel {
 
       if (message.type === 'queryResult') {
         if (message.ok) {
-          status.textContent = 'Success';
-          resultViewer.textContent = JSON.stringify(message.data, null, 2);
+          setStatus('Success');
+          lastResult = JSON.stringify(message.data, null, 2);
+          resultViewer.textContent = lastResult;
         } else {
-          status.textContent = 'Error';
+          setStatus('Error');
+          lastResult = message.error;
           resultViewer.textContent = message.error;
         }
       }
+
+      if (message.type === 'initialState') {
+        endpointInfo.textContent = 'Endpoint: ' + message.endpoint;
+        populateHistory(message.history || []);
+      }
+
+      if (message.type === 'historyUpdated') {
+        populateHistory(message.history || []);
+      }
+
+      if (message.type === 'historyLoaded') {
+        queryEditor.value = message.query || '';
+        variablesEditor.value = message.variablesText || '';
+        setStatus('History item loaded');
+      }
     });
+
+    vscode.postMessage({ type: 'getInitialState' });
   </script>
 </body>
 </html>`;

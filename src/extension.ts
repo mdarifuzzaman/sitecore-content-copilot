@@ -63,7 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
   const openGraphqlExplorerCommand = vscode.commands.registerCommand(
     'sitecore.openGraphqlExplorer',
     async () => {
-      GraphqlExplorerPanel.createOrShow(context.extensionUri);
+      GraphqlExplorerPanel.createOrShow(context);
     }
   );
 
