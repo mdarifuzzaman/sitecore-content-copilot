@@ -9,8 +9,10 @@ import { generateComponent } from './commands/generateComponent';
 import { SitecoreTreeProvider } from './providers/sitecoreTreeProvider';
 import { GraphqlExplorerPanel } from './panels/graphqlExplorerPanel';
 import { openItemInGraphqlExplorer } from './commands/openItemInGraphqlExplorer';
+import { runSetupWizard } from './setup/setupWizard';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+  await runSetupWizard(context);
   const treeProvider = new SitecoreTreeProvider();
 
   vscode.window.registerTreeDataProvider('sitecoreExplorer', treeProvider);
