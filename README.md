@@ -2,8 +2,8 @@
 
 Sitecore Content Copilot is a **VS Code extension for Sitecore XM Cloud and Headless developers** that helps you explore content, generate code, run GraphQL queries, and understand Sitecore items faster — now with optional **AI-powered insights**.
 
-![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/YOUR_PUBLISHER.sitecore-content-copilot)
-![Downloads](https://img.shields.io/visual-studio-marketplace/d/YOUR_PUBLISHER.sitecore-content-copilot)
+<a href="https://marketplace.visualstudio.com/items?itemName=arif-cmslightaustraliaptyltd.sitecore-content-copilot"><img src="https://img.shields.io/vscode-marketplace/v/arif-cmslightaustraliaptyltd.sitecore-content-copilot.svg" alt="VS Code Marketplace"></a>
+![Downloads](https://img.shields.io/vscode-marketplace/d/arif-cmslightaustraliaptyltd.sitecore-content-copilot.svg)
 
 This extension improves developer productivity when working with **Sitecore JSS, XM Cloud, and GraphQL APIs**.
 
