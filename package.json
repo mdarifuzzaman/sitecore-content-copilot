@@ -67,6 +67,10 @@
     {
       "command": "sitecore.openGraphqlExplorer",
       "title": "Sitecore: Open GraphQL Explorer"
+    },
+    {
+      "command": "sitecore.generateComponent",
+      "title": "Sitecore: Generate JSS Component"
     }
   ],
     "viewsContainers": {
@@ -114,6 +118,11 @@
           "command": "sitecore.copyGraphqlQuery",
           "when": "view == sitecoreExplorer && viewItem == item",
           "group": "navigation@3"
+        },
+        {
+          "command": "sitecore.generateComponent",
+          "when": "view == sitecoreExplorer && viewItem == item",
+          "group": "navigation@4"
         }
       ]
     }

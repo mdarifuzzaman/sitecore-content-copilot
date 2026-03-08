@@ -5,6 +5,7 @@ import { openItemFromExplorer } from './commands/openItemFromExplorer';
 import { generateTypes } from './commands/generateTypes';
 import { generateJssModel } from './commands/generateJssModel';
 import { copyGraphqlQuery } from './commands/copyGraphqlQuery';
+import { generateComponent } from './commands/generateComponent';
 import { SitecoreTreeProvider } from './providers/sitecoreTreeProvider';
 import { GraphqlExplorerPanel } from './panels/graphqlExplorerPanel';
 
@@ -52,6 +53,13 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const generateComponentCommand = vscode.commands.registerCommand(
+    'sitecore.generateComponent',
+    async (input: unknown) => {
+      await generateComponent(input);
+    }
+  );
+
   const openGraphqlExplorerCommand = vscode.commands.registerCommand(
     'sitecore.openGraphqlExplorer',
     async () => {
@@ -80,6 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
     generateTypesCommand,
     generateJssModelCommand,
     copyGraphqlQueryCommand,
+    generateComponentCommand,
     openGraphqlExplorerCommand,
     refreshExplorerCommand
   );
