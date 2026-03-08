@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { connectSitecore } from './commands/connect';
 import { searchItem } from './commands/searchItem';
 import { openItemFromExplorer } from './commands/openItemFromExplorer';
+import { generateTypes } from './commands/generateTypes';
 import { SitecoreTreeProvider } from './providers/sitecoreTreeProvider';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -30,8 +31,15 @@ export function activate(context: vscode.ExtensionContext) {
 
   const openItemFromExplorerCommand = vscode.commands.registerCommand(
     'sitecore.openItemFromExplorer',
-    async (path: string) => {
-      await openItemFromExplorer(path);
+    async (input: unknown) => {
+      await openItemFromExplorer(input);
+    }
+  );
+
+  const generateTypesCommand = vscode.commands.registerCommand(
+    'sitecore.generateTypes',
+    async (input: unknown) => {
+      await generateTypes(input);
     }
   );
 
@@ -54,6 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
     connectCommand,
     searchItemCommand,
     openItemFromExplorerCommand,
+    generateTypesCommand,
     refreshExplorerCommand
   );
 }

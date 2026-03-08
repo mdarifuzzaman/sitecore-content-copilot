@@ -51,6 +51,10 @@
     {
     "command": "sitecore.openItemFromExplorer",
     "title": "Sitecore: Open Item From Explorer"
+    },
+    {
+      "command": "sitecore.generateTypes",
+      "title": "Sitecore: Generate TypeScript Model"
     }
   ],
     "viewsContainers": {
@@ -75,6 +79,18 @@
         {
           "command": "sitecore.refreshExplorer",
           "when": "view == sitecoreExplorer",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "sitecore.openItemFromExplorer",
+          "when": "view == sitecoreExplorer && viewItem == item",
+          "group": "inline"
+        },
+        {
+          "command": "sitecore.generateTypes",
+          "when": "view == sitecoreExplorer && viewItem == item",
           "group": "navigation"
         }
       ]

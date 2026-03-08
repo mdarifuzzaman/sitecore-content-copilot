@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { getItemByPath } from '../sitecore/contentService';
+import { generateTypescriptInterface } from '../utils/typeMapper';
 
 function resolvePath(input: unknown): string | undefined {
   if (typeof input === 'string') {
@@ -16,7 +17,7 @@ function resolvePath(input: unknown): string | undefined {
   return undefined;
 }
 
-export async function openItemFromExplorer(input: unknown) {
+export async function generateTypes(input: unknown) {
   try {
     const path = resolvePath(input);
 
@@ -32,14 +33,25 @@ export async function openItemFromExplorer(input: unknown) {
       return;
     }
 
+    const fields = item.fields ?? [];
+
+    if (fields.length === 0) {
+      vscode.window.showWarningMessage(
+        `Item "${item.name}" does not contain any fields to generate a model from.`
+      );
+      return;
+    }
+
+    const content = generateTypescriptInterface(item.name, fields);
+
     const doc = await vscode.workspace.openTextDocument({
-      content: JSON.stringify(item, null, 2),
-      language: 'json',
+      content,
+      language: 'typescript',
     });
 
     await vscode.window.showTextDocument(doc);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    vscode.window.showErrorMessage(`Open item failed: ${message}`);
+    vscode.window.showErrorMessage(`Generate TypeScript model failed: ${message}`);
   }
 }
