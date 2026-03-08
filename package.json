@@ -4,6 +4,7 @@
   "description": "Developer toolkit for Sitecore XM Cloud and Headless development.",
   "version": "0.1.0",
   "publisher": "arif-dev",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.109.0"
   },
