@@ -3,7 +3,7 @@
   "displayName": "Sitecore Content Copilot",
   "description": "Developer toolkit for Sitecore XM Cloud and Headless development.",
   "version": "0.1.0",
-  "publisher": "cmslight australia pty ltd",
+  "publisher": "arif - cmslight australia pty ltd",
   "engines": {
     "vscode": "^1.109.0"
   },

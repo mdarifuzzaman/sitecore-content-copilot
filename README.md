@@ -13,6 +13,29 @@ This extension improves developer productivity when working with **Sitecore JSS,
 
 ## Sitecore Content Explorer
 
+## Sitecore Content Explorer
+
+Browse Sitecore content directly inside VS Code.
+
+![Explorer Demo](docs/feature1.gif)
+
+---
+
+## GraphQL Explorer
+
+Run GraphQL queries directly against your Sitecore endpoint.
+
+![GraphQL Demo](docs/feature2.gif)
+
+---
+
+## Others
+
+Generate component instantly.
+
+![Explain Item Demo](docs/feature3.gif)
+
+
 Browse Sitecore content directly inside VS Code.
 
 * Explore the `/sitecore/content` tree
@@ -36,6 +59,7 @@ Features include:
 * Copy query / copy results
 * Format variables
 * Run query with **Ctrl/Cmd + Enter**
+
 
 ---
 
