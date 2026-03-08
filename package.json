@@ -3,8 +3,19 @@
   "displayName": "Sitecore Content Copilot",
   "description": "Developer toolkit for Sitecore XM Cloud and Headless development.",
   "version": "0.1.0",
-  "publisher": "arif-dev",
+  "publisher": "arif-cmslightaustraliaptyltd",
   "license": "MIT",
+  "keywords": [
+    "sitecore",
+    "xmcloud",
+    "sitecore xm cloud",
+    "sitecore jss",
+    "sitecore headless",
+    "sitecore graphql",
+    "graphql",
+    "jss",
+    "nextjs"
+  ],
   "engines": {
     "vscode": "^1.109.0"
   },
