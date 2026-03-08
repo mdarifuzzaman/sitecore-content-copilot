@@ -42,12 +42,7 @@
         "type": "boolean",
         "default": false,
         "description": "Enable AI features in Sitecore Content Copilot"
-      },
-      "sitecoreCopilot.aiEndpoint": {
-        "type": "string",
-        "default": "",
-        "description": "AI endpoint URL"
-      },
+      },      
       "sitecoreCopilot.aiApiKey": {
         "type": "string",
         "default": "",

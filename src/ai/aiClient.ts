@@ -8,21 +8,18 @@ export async function generateAiText(prompt: string): Promise<AiResponse> {
   const config = vscode.workspace.getConfiguration('sitecoreCopilot');
 
   const enabled = config.get<boolean>('aiEnabled');
-  const endpoint = config.get<string>('aiEndpoint');
   const apiKey = config.get<string>('aiApiKey');
-  const model = config.get<string>('aiModel');
+  const model = config.get<string>('aiModel') || 'gpt-5';
 
   if (!enabled) {
     throw new Error('AI features are disabled. Enable sitecoreCopilot.aiEnabled first.');
   }
 
-  if (!endpoint || !apiKey || !model) {
-    throw new Error(
-      'AI is not configured. Please set aiEndpoint, aiApiKey, and aiModel.'
-    );
+  if (!apiKey) {
+    throw new Error('AI API key is missing. Set sitecoreCopilot.aiApiKey.');
   }
 
-  const response = await fetch(endpoint, {
+  const response = await fetch('https://api.openai.com/v1/responses', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -30,25 +27,24 @@ export async function generateAiText(prompt: string): Promise<AiResponse> {
     },
     body: JSON.stringify({
       model,
-      prompt,
+      input: prompt,
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`AI request failed: HTTP ${response.status}`);
+    const errorText = await response.text();
+    throw new Error(`OpenAI request failed: HTTP ${response.status} - ${errorText}`);
   }
 
   const json: any = await response.json();
 
   const content =
-    json?.content ??
-    json?.text ??
-    json?.output ??
-    json?.choices?.[0]?.message?.content ??
+    json?.output_text ??
+    json?.output?.[0]?.content?.[0]?.text ??
     '';
 
   if (!content) {
-    throw new Error('AI response did not contain usable content.');
+    throw new Error('OpenAI response did not contain usable text.');
   }
 
   return { content };
