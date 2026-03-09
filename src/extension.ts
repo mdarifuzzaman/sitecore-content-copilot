@@ -11,6 +11,8 @@ import { GraphqlExplorerPanel } from './panels/graphqlExplorerPanel';
 import { openItemInGraphqlExplorer } from './commands/openItemInGraphqlExplorer';
 import { runSetupWizard } from './setup/setupWizard';
 import { explainItem } from './commands/explainItem';
+import { analyzePersonalizeTrigger } from './commands/analyzePersonalizeTrigger';
+import { openInRenderingHost } from './commands/openInRenderingHost';
 
 export async function activate(context: vscode.ExtensionContext) {
   await runSetupWizard(context);
@@ -95,6 +97,20 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const analyzePersonalizeTriggerCommand = vscode.commands.registerCommand(
+    'sitecore.analyzePersonalizeTrigger',
+    async () => {
+      await analyzePersonalizeTrigger();
+    }
+  );
+
+  const openInRenderingHostCommand = vscode.commands.registerCommand(
+    'sitecore.openInRenderingHost',
+    async (input: unknown) => {
+      await openInRenderingHost(input);
+    }
+  );
+
   const config = vscode.workspace.getConfiguration('sitecoreCopilot');
   const endpoint = config.get<string>('endpoint');
   treeProvider.setConnected(!!endpoint);
@@ -110,7 +126,9 @@ export async function activate(context: vscode.ExtensionContext) {
     openGraphqlExplorerCommand,
     refreshExplorerCommand,
     openItemInGraphqlExplorerCommand,
-    explainItemCommand
+    explainItemCommand,
+    analyzePersonalizeTriggerCommand,
+    openInRenderingHostCommand
   );
 }
 

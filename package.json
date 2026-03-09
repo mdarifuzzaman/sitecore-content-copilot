@@ -37,6 +37,16 @@
     "configuration": {
       "title": "Sitecore Content Copilot",
       "properties": {
+        "sitecoreCopilot.renderingHost": {
+            "type": "string",
+            "default": "http://localhost:3000",
+            "description": "Default rendering host URL for previewing Sitecore pages"
+          },
+          "sitecoreCopilot.contentRoot": {
+            "type": "string",
+            "default": "/sitecore/content/Office",
+            "description": "Content root used to derive preview routes"
+          },
         "sitecoreCopilot.endpoint": {
           "type": "string",
           "default": "",
@@ -113,6 +123,16 @@
       {
         "command": "sitecore.explainItem",
         "title": "Sitecore: Explain Item"
+      },
+      {
+        "command": "sitecore.analyzePersonalizeTrigger",
+        "title": "Analyze Personalize Trigger",
+        "category": "Sitecore Personalize"
+      },
+      {
+        "command": "sitecore.openInRenderingHost",
+        "title": "Open in Rendering Host",
+        "category": "Sitecore"
       }
     ],
     "viewsContainers": {
@@ -175,6 +195,11 @@
           "command": "sitecore.explainItem",
           "when": "view == sitecoreExplorer && viewItem == item",
           "group": "navigation@6"
+        },
+        {
+          "command": "sitecore.openInRenderingHost",
+          "when": "view == sitecoreExplorer && viewItem == item",
+          "group": "navigation@7"
         }
       ]
     }
