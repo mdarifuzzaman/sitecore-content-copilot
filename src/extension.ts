@@ -13,6 +13,9 @@ import { runSetupWizard } from './setup/setupWizard';
 import { explainItem } from './commands/explainItem';
 import { analyzePersonalizeTrigger } from './commands/analyzePersonalizeTrigger';
 import { openInRenderingHost } from './commands/openInRenderingHost';
+import { copyRoutePath } from './commands/copyRoutePath';
+import { copyItemId } from './commands/copyItemId';
+import { copyLayoutQuery } from './commands/copyLayoutQuery';
 
 export async function activate(context: vscode.ExtensionContext) {
   await runSetupWizard(context);
@@ -111,6 +114,27 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const copyRoutePathCommand = vscode.commands.registerCommand(
+  'sitecore.copyRoutePath',
+  async (input: unknown) => {
+    await copyRoutePath(input);
+  }
+);
+
+const copyItemIdCommand = vscode.commands.registerCommand(
+  'sitecore.copyItemId',
+  async (input: unknown) => {
+    await copyItemId(input);
+  }
+);
+
+const copyLayoutQueryCommand = vscode.commands.registerCommand(
+  'sitecore.copyLayoutQuery',
+  async (input: unknown) => {
+    await copyLayoutQuery(input);
+  }
+);
+
   const config = vscode.workspace.getConfiguration('sitecoreCopilot');
   const endpoint = config.get<string>('endpoint');
   treeProvider.setConnected(!!endpoint);
@@ -128,7 +152,10 @@ export async function activate(context: vscode.ExtensionContext) {
     openItemInGraphqlExplorerCommand,
     explainItemCommand,
     analyzePersonalizeTriggerCommand,
-    openInRenderingHostCommand
+    openInRenderingHostCommand,
+    copyRoutePathCommand,
+    copyLayoutQueryCommand,
+    copyItemIdCommand
   );
 }
 

@@ -16,48 +16,45 @@ function slugify(segment: string): string {
   return encodeURIComponent(segment.replace(/\s+/g, '-'));
 }
 
-export function buildPreviewUrl(options: BuildPreviewUrlOptions): string {
-  const itemPath = options.itemPath.trim();
-  const renderingHost = normalizeHost(options.renderingHost);
-  const contentRoot = options.contentRoot.trim().replace(/\/+$/, '');
+export function buildRoutePath(itemPath: string, contentRoot: string): string {
+  const normalizedItemPath = itemPath.trim();
+  const normalizedContentRoot = contentRoot.trim().replace(/\/+$/, '');
 
-  if (!itemPath.startsWith(contentRoot)) {
+  if (!normalizedItemPath.startsWith(normalizedContentRoot)) {
     throw new Error(
-      `Item path "${itemPath}" does not start with configured content root "${contentRoot}".`
+      `Item path "${normalizedItemPath}" does not start with configured content root "${normalizedContentRoot}".`
     );
   }
 
-  const relativePath = itemPath.slice(contentRoot.length);
+  const relativePath = normalizedItemPath.slice(normalizedContentRoot.length);
+
   const segments = trimSlashes(relativePath)
     .split('/')
     .filter(Boolean);
 
   if (segments.length === 0) {
-    return renderingHost;
+    return '/';
   }
 
-  // Expected structure:
   // /sitecore/content/{site}/{home}/...
-  //
-  // Example:
-  // /sitecore/content/siteA/home/about -> /about
-  // /sitecore/content/siteA/home       -> /
-  //
-  // We remove:
-  // 1. site name
-  // 2. home item
   const [, ...routeSegmentsAfterSite] = segments;
 
   if (routeSegmentsAfterSite.length === 0) {
-    return renderingHost;
+    return '/';
   }
 
   const [, ...actualRouteSegments] = routeSegmentsAfterSite;
 
-  const routePath =
-  actualRouteSegments.length > 0
+  return actualRouteSegments.length > 0
     ? `/${actualRouteSegments.map(slugify).join('/')}`
     : '/';
+}
 
-  return `${renderingHost}${routePath}`;
+export function buildPreviewUrl(options: BuildPreviewUrlOptions): string {
+  const renderingHost = normalizeHost(options.renderingHost);
+  const routePath = buildRoutePath(options.itemPath, options.contentRoot);
+
+  return routePath === '/'
+    ? renderingHost
+    : `${renderingHost}${routePath}`;
 }

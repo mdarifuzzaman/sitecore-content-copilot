@@ -2,7 +2,7 @@
   "name": "sitecore-content-copilot",
   "displayName": "Sitecore Content Copilot",
   "description": "Developer toolkit for Sitecore XM Cloud and Headless development.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "publisher": "arif-cmslightaustraliaptyltd",
   "license": "MIT",
   "keywords": [
@@ -133,6 +133,21 @@
         "command": "sitecore.openInRenderingHost",
         "title": "Open in Rendering Host",
         "category": "Sitecore"
+      },
+      {
+        "command": "sitecore.copyRoutePath",
+        "title": "Copy Route Path",
+        "category": "Sitecore"
+      },
+      {
+        "command": "sitecore.copyItemId",
+        "title": "Copy Item ID",
+        "category": "Sitecore"
+      },
+      {
+        "command": "sitecore.copyLayoutQuery",
+        "title": "Copy Layout Query",
+        "category": "Sitecore"
       }
     ],
     "viewsContainers": {
@@ -200,6 +215,21 @@
           "command": "sitecore.openInRenderingHost",
           "when": "view == sitecoreExplorer && viewItem == item",
           "group": "navigation@7"
+        },
+        {
+          "command": "sitecore.copyRoutePath",
+          "when": "view == sitecoreExplorer && viewItem == item",
+          "group": "navigation@8"
+        },
+        {
+          "command": "sitecore.copyItemId",
+          "when": "view == sitecoreExplorer && viewItem == item",
+          "group": "navigation@9"
+        },
+        {
+          "command": "sitecore.copyLayoutQuery",
+          "when": "view == sitecoreExplorer && viewItem == item",
+          "group": "navigation@10"
         }
       ]
     }
