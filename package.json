@@ -2,7 +2,7 @@
   "name": "sitecore-content-copilot",
   "displayName": "Sitecore Content Copilot",
   "description": "Developer toolkit for Sitecore XM Cloud and Headless development.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "publisher": "arif-cmslightaustraliaptyltd",
   "license": "MIT",
   "keywords": [

@@ -6,6 +6,35 @@ This project follows semantic versioning.
 
 ---
 
+## 0.1.4
+
+### ✨ New Features
+
+**Rendering Host Integration**
+- Open Sitecore page items directly in the configured rendering host
+- Automatically derives route paths from Sitecore content structure
+- Supports slug generation (spaces → `-`)
+
+**Developer Productivity Tools**
+- Copy **Route Path** from a selected Sitecore item
+- Copy **Item ID** (GUID) directly to clipboard
+- Copy ready-to-use **Layout GraphQL Query** for debugging rendering
+
+**Personalize Debugging Tools**
+- Analyze Personalize trigger logic from session events
+- Supports rule descriptions such as:
+  - `user visits 3 distinct pages`
+  - `event X exists`
+  - `user viewed page Y`
+- Optional guest input
+- Supports loading guest dynamically via **Guest Reference**
+
+### 🔧 Improvements
+- Improved route path generation
+- Better slug handling for item names containing spaces
+- Reusable route builder utilities for preview URLs and queries
+
+
 ## [0.1.0] - Initial Release
 
 ### Added

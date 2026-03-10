@@ -9,13 +9,92 @@ This extension improves developer productivity when working with **Sitecore JSS,
 
 ---
 
-# ✨ Features
+# ✨ Key Features
 
-## Sitecore Content Explorer
+## 📂 Sitecore Content Explorer
 
-## Sitecore Content Explorer
+Browse Sitecore content items directly inside VS Code.
 
-Browse Sitecore content directly inside VS Code.
+- Navigate Sitecore content tree
+- Search items
+- Inspect item fields
+
+---
+
+## ⚡ Developer Productivity Tools
+
+Quick actions available from the explorer.
+
+### Copy Route Path
+Instantly copy the route for a page item.
+
+Example:
+/sitecore/content/siteA/home/about-us
+↓
+/about-us
+---
+
+### Copy Item ID
+Copy the GUID of a Sitecore item directly to the clipboard.
+
+---
+
+### Copy Layout Query
+Generate a ready-to-run GraphQL layout query for debugging rendering.
+
+Example query:
+
+```graphql
+query LayoutQuery($site: String!, $routePath: String!, $language: String!) {
+  layout(site: $site, routePath: $routePath, language: $language) {
+    item {
+      rendered
+    }
+  }
+}
+
+### Rendering Host Integration
+Preview pages directly in your headless rendering host.
+
+Right-click any page item and choose:
+
+Open in Rendering Host
+
+Example:
+
+/sitecore/content/siteA/home/about-us
+↓
+http://localhost:3000/about-us
+
+Routes are automatically generated from the Sitecore content path.
+
+### Personalize Trigger Analyzer
+
+Debug Sitecore Personalize experiences directly from VS Code.
+
+You can:
+
+simulate session events
+
+test trigger rules
+
+analyze why an experience did or didn’t trigger
+
+Example rule:
+
+user visits 3 distinct pages
+
+The extension analyzes event payloads and provides a diagnostic report.
+
+Optional:
+
+paste guest JSON
+
+load guest by guest reference
+
+
+# ✨ Some Features in Action
+
 
 ![Explorer Demo](docs/feature1.gif)
 
@@ -217,6 +296,10 @@ Available commands:
 | Sitecore: Generate JSS Model    | Generate TypeScript model   |
 | Sitecore: Generate Component    | Generate React component    |
 | Sitecore: Explain Item          | AI explanation of item      |
+| Sitecore: Copy Route Path       | Copy route path             |
+| Sitecore: Copy Item ID          | Copy Item ID                |
+| Sitecore: Copy Layout Query     | Copy Layout Query           |
+| Sitecore Personalize: Analyze Trigger    | Copy Layout Query  |
 
 ---
 
