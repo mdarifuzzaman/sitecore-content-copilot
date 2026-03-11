@@ -2,7 +2,7 @@
   "name": "sitecore-content-copilot",
   "displayName": "Sitecore Content Copilot",
   "description": "Developer toolkit for Sitecore XM Cloud and Headless development.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "arif-cmslightaustraliaptyltd",
   "license": "MIT",
   "keywords": [
@@ -44,7 +44,7 @@
           },
           "sitecoreCopilot.contentRoot": {
             "type": "string",
-            "default": "/sitecore/content/Office",
+            "default": "/sitecore/content",
             "description": "Content root used to derive preview routes"
           },
         "sitecoreCopilot.endpoint": {

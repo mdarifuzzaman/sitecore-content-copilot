@@ -271,13 +271,16 @@ Example configuration:
 
 ```json
 {
-  "sitecoreCopilot.endpoint": "https://your-xmcloud/graphql",
+  "sitecoreCopilot.endpoint": "https://your-xmcloud/graphql or https://your-cm/sitecore/api/graph/edge",
   "sitecoreCopilot.apiKey": "your-sitecore-api-key",
   "sitecoreCopilot.language": "en",
 
   "sitecoreCopilot.aiEnabled": true,
   "sitecoreCopilot.aiApiKey": "your-openai-key",
-  "sitecoreCopilot.aiModel": "gpt-4.1-mini"
+  "sitecoreCopilot.aiModel": "gpt-4.1-mini",
+
+  "sitecoreCopilot.renderingHost": "http://localhost:3000",          
+  "sitecoreCopilot.contentRoot":"/sitecore/content/Office"
 }
 ```
 
